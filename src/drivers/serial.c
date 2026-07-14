@@ -59,13 +59,16 @@ void serial_irq()
 size_t serial_read(char *buf, size_t maxlen)
 {
     size_t bytes_lidos = 0;
-    serial_irq_disable();
+    u64 flags = hart_irq_save(); 
+    
     while (rx_tail != rx_head && bytes_lidos < maxlen) {
         buf[bytes_lidos] = rx_buffer[rx_tail];
         rx_tail = (rx_tail + 1) % 1024;
         bytes_lidos++;
     }
-    serial_irq_enable();
+    
+    hart_irq_restore(flags); 
+    
     return bytes_lidos;
 }
 

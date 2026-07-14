@@ -50,6 +50,7 @@ void handle_trap(struct registers *regs)
 
 void hart_irq_enable()
 {
+    csr_set(CSR_SIE, CSR_SIE_STIE | CSR_SIE_SEIE);
     csr_set(CSR_SSTATUS, CSR_SSTATUS_SIE);
 }
 
