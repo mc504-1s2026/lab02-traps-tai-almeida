@@ -24,6 +24,9 @@ void kmain()
 
 	info("enabling traps...\n");
 	trap_setup();
+
+	plic_init();  
+
 	info("enabling timer...\n");
 	timer_irq_enable();
 	info("enabling serial...\n");
@@ -31,7 +34,6 @@ void kmain()
 	serial_irq_enable();
 
 	/* implement your shell here */
-	plic_init();
     hart_irq_enable();
 
     printk(0, "> ");
