@@ -13,6 +13,12 @@ void kmain()
 	info("setting up virtual memory...\n");
 	vm_init();
 
+	trap_setup();        
+    plic_init();        
+    serial_init();       
+    timer_init();        
+    hart_irq_enable();
+
 	info("enabling traps...\n");
 	trap_setup();
 	info("enabling timer...\n");

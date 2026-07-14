@@ -45,3 +45,28 @@ void plic_hart_complete_irq(u32 hart, u32 irq)
 	iowrite32(irq, PLIC_HART_CLAIM(hart));
 }
 
+
+extern void serial_irq(void);
+
+void plic_irq_handler(void)
+{
+    u32 irq = plic_hart_claim_irq(0);
+
+    if (irq == 10) {
+        serial_irq();
+    } else if (irq != 0) {
+        trace("plic: interrupcao nao tratada: %d\n", irq);
+    }
+
+	if (irq != 0) {
+        plic_hart_complete_irq(0, irq);
+    }
+}
+
+
+void plic_init(void)
+{
+    plic_irq_set_priority(10, 1);
+    plic_hart_enable_irq(0, 10);
+    plic_hart_set_threshold(0, 0);
+}
