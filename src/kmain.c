@@ -13,6 +13,7 @@ extern u64 uptime_segundos;
 extern u64 user_alarm_sobrando;
 
 extern void plic_init(void);
+void timer_setup(void);
 void kmain()
 {
 	printk_set_level(LOG_DEBUG);
