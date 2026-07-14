@@ -34,7 +34,7 @@ void timer_irq()
     if (user_alarm_sobrando > 0) {
         user_alarm_sobrando--;
         if (user_alarm_sobrando == 0) {
-            printk("%s", "\nalarm\n> "); 
+            printk(0, "%s", "\nalarm\n> ");
         }
     }
 

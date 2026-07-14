@@ -6,6 +6,9 @@
 /* defined in src/trap_entry.S */
 extern void trap_entry();
 
+void timer_irq(void);
+void plic_irq_handler(void);
+
 void handle_irq(u64 code)
 {
     if (code == 5) {
@@ -22,7 +25,7 @@ void handle_exception(u64 code)
     u64 stval = csr_read(CSR_STVAL);
     u64 sepc = csr_read(CSR_SEPC);
     
-    printk("deu excecao. scause: %d, stval: 0x%lx, sepc: 0x%lx\n", code, stval, sepc);
+    printk(0, "deu excecao. scause: %d, stval: 0x%lx, sepc: 0x%lx\n", code, stval, sepc);
     panic("kernel crashou com a excecao\n");
 }
 
@@ -38,8 +41,8 @@ void handle_trap(struct registers *regs)
 {
     u64 scause = csr_read(CSR_SCAUSE);
 
-    if (scause & (1ULL << 63)) {
-        handle_irq(scause & ~(1ULL << 63)); 
+    if (scause & TRAP_IRQ_BIT) {
+        handle_irq(scause & ~TRAP_IRQ_BIT); 
     } else {
         handle_exception(scause);
     }
