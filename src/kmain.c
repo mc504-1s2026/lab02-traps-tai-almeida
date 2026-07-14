@@ -4,7 +4,12 @@
 #include <kernel/trap.h>
 #include <kernel/serial.h>
 
+static char line_buffer[256];
+static int pos = 0;
+
 extern int _hartid[];
+extern u64 uptime_segundos;
+extern u64 user_alarm_sobrando;
 void kmain()
 {
 	printk_set_level(LOG_DEBUG);
@@ -13,11 +18,6 @@ void kmain()
 	info("setting up virtual memory...\n");
 	vm_init();
 
-	trap_setup();        
-    plic_init();        
-    serial_init();       
-    timer_init();        
-    hart_irq_enable();
 
 	info("enabling traps...\n");
 	trap_setup();
@@ -28,4 +28,44 @@ void kmain()
 	serial_irq_enable();
 
 	/* implement your shell here */
+	plic_init();
+    hart_irq_enable();
+
+    printk(0, "> ");
+
+    char c;
+    while (1) {
+        if (serial_read(&c) > 0) {
+            if (c == '\r' || c == '\n') {
+                line_buffer[pos] = '\0';
+                printk(0, "\n"); 
+
+                if (strncmp(line_buffer, "echo ", 5) == 0) {
+                    printk(0, "%s\n", line_buffer + 5);
+                } 
+                else if (strcmp(line_buffer, "uptime") == 0) {
+                    printk(0, "%ds\n", (int)uptime_segundos);
+                } 
+                else if (strncmp(line_buffer, "alarm ", 6) == 0) {
+                    u64 t = 0;
+                    int i = 6; // comeca dps do alarm
+                    
+                    while (line_buffer[i] >= '0' && line_buffer[i] <= '9') {
+                        t = t * 10 + (u64)(line_buffer[i] - '0');
+                        i++;
+                    }
+                    user_alarm_sobrando = t;
+                    timer_set_alarm(1);
+				}
+
+                pos = 0; 
+                printk(0, "> "); 
+				
+            } 
+            else if (pos < 255) {
+                line_buffer[pos++] = c;
+                serial_putc(c); 
+            }
+        }
+    }
 }
