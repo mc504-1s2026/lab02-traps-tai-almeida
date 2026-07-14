@@ -22,6 +22,9 @@ static char rx_buffer[1024];
 static volatile size_t rx_head = 0;
 static volatile size_t rx_tail = 0;
 
+extern u64 hart_irq_save(void);
+extern void hart_irq_restore(u64 flags);
+
 void serial_init()
 {
 	uart_write_reg(IER, 0x00);

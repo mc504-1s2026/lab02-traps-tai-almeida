@@ -2,9 +2,10 @@
 #include <kernel/panic.h>
 #include <arch/csr.h>
 
-
+struct registers;
 /* defined in src/trap_entry.S */
-extern void trap_entry();
+extern void trap_entry(void);
+
 
 void timer_irq(void);
 void plic_irq_handler(void);
