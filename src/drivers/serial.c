@@ -2,7 +2,7 @@
 #include <kernel/panic.h>
 
  
-#define UART_BASE (0xffffffe000000000ULL + 0x10000000ULL)
+#define UART_BASE 0x10000000ULL
 
 #define RBR 0 
 #define THR 0 
