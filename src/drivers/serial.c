@@ -1,8 +1,8 @@
 #include <kernel/serial.h>
 #include <kernel/panic.h>
+#include <kernel/mm.h>  
 
- 
-#define UART_BASE 0x10000000ULL
+#define UART_BASE (0x10000000ULL + KERNEL_DIRECT_MAP_START)
 
 #define RBR 0 
 #define THR 0 
@@ -19,8 +19,8 @@
 
 static char rx_buffer[1024];
 
-static size_t rx_head = 0;
-static size_t rx_tail = 0;
+static volatile size_t rx_head = 0;
+static volatile size_t rx_tail = 0;
 
 void serial_init()
 {
@@ -56,19 +56,16 @@ void serial_irq()
     }
 }
 
-size_t serial_read(char *buf)
+size_t serial_read(char *buf, size_t maxlen)
 {
-	size_t bytes_lidos = 0;
-
+    size_t bytes_lidos = 0;
     serial_irq_disable();
-
-    while (rx_tail != rx_head) {
+    while (rx_tail != rx_head && bytes_lidos < maxlen) {
         buf[bytes_lidos] = rx_buffer[rx_tail];
         rx_tail = (rx_tail + 1) % 1024;
         bytes_lidos++;
     }
     serial_irq_enable();
-
     return bytes_lidos;
 }
 

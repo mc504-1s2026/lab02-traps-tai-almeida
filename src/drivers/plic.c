@@ -13,7 +13,7 @@
 #define PLIC_IRQ_PRIORITY(irq)		((u32*)(PLIC_IRQ_BASE + 4 * (irq)))
 /* Calculate enable register address for a given hart on S-mode */
 #define PLIC_HART_ENABLE(hart)		((u32*)(PLIC_ENABLE_BASE + (hart) * 0x100))
-#define PLIC_HART_THRESHOLD(hart)	((u32*)(PLIC_THRESH_BASE + (hart) * 0x1000))
+#define PLIC_HART_THRESHOLD(hart)   ((u32*)(PLIC_THRESH_BASE + (hart) * 0x1000))
 #define PLIC_HART_CLAIM(hart)		((u32*)(PLIC_THRESH_BASE + 0x4 + (hart) * 0x1000))
 
 void plic_irq_set_priority(u32 irq, u32 prio)
@@ -23,9 +23,11 @@ void plic_irq_set_priority(u32 irq, u32 prio)
 
 void plic_hart_enable_irq(u32 hart, u32 irq)
 {
-	u32 offset = irq/32;
-	u32 val = (1 << (irq % 32));
-	iowrite32(val, PLIC_HART_ENABLE(hart) + offset);
+	u32 offset = irq / 32;
+    volatile u32 *reg = PLIC_HART_ENABLE(hart) + offset;
+    u32 val = ioread32(reg);
+    val |= (1 << (irq % 32));
+    iowrite32(val, reg);
 }
 
 void plic_hart_set_threshold(u32 hart, u32 threshold)

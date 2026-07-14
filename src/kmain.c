@@ -28,10 +28,11 @@ void kmain()
 	plic_init();  
 
 	info("enabling timer...\n");
+	timer_setup();
 	timer_irq_enable();
 	info("enabling serial...\n");
 	serial_init();
-	serial_irq_enable();
+	// serial_irq_enable();
 
 	/* implement your shell here */
     hart_irq_enable();
@@ -40,7 +41,7 @@ void kmain()
 
     char c;
     while (1) {
-        if (serial_read(&c) > 0) {
+        if (serial_read(&c, 1) > 0) {
             if (c == '\r' || c == '\n') {
                 line_buffer[pos] = '\0';
                 printk(0, "\n"); 
@@ -59,8 +60,10 @@ void kmain()
                         t = t * 10 + (u64)(line_buffer[i] - '0');
                         i++;
                     }
-                    user_alarm_sobrando = t;
-                    timer_set_alarm(1);
+                    u64 flags = hart_irq_save();
+					user_alarm_sobrando = t;
+					hart_irq_restore(flags);
+                    // timer_set_alarm(1);
 				}
 
                 pos = 0; 

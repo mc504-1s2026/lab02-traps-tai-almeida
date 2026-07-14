@@ -4,6 +4,7 @@
 
 u64 user_alarm_sobrando = 0;
 u64 uptime_segundos = 0;
+static u64 next_tick = 0;
 
 u64 timer_read()
 {
@@ -23,8 +24,14 @@ void timer_irq_disable()
 void timer_set_alarm(u64 segundos)
 {
 	u64 agr = timer_read();
-    u64 ticks_in_future = agr + (segundos * 10000000);
+	u64 ticks_in_future = agr + (segundos * TIMER_FREQ);
     csr_write(CSR_STIMECMP, ticks_in_future);
+}
+
+void timer_setup(void)
+{
+    next_tick = timer_read() + TIMER_FREQ;
+    csr_write(CSR_STIMECMP, next_tick);
 }
 
 void timer_irq()
@@ -38,6 +45,6 @@ void timer_irq()
         }
     }
 
-    
-    timer_set_alarm(1);
+    next_tick += TIMER_FREQ; 
+    csr_write(CSR_STIMECMP, next_tick);
 }
