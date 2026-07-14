@@ -2,8 +2,8 @@
 #include <kernel/panic.h>
 #include <arch/csr.h>
 
-static u64 user_alarm_sobrando = 0;
-static u64 uptime_segundos = 0;
+u64 user_alarm_sobrando = 0;
+u64 uptime_segundos = 0;
 
 u64 timer_read()
 {
@@ -34,7 +34,7 @@ void timer_irq()
     if (user_alarm_sobrando > 0) {
         user_alarm_sobrando--;
         if (user_alarm_sobrando == 0) {
-            printk("\nalarm\n>", 0); 
+            printk("%s", "\nalarm\n> "); 
         }
     }
 
