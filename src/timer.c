@@ -36,15 +36,14 @@ void timer_setup(void)
 
 void timer_irq()
 {
-	uptime_segundos++;
+    timer_set_alarm(1); 
+
+    uptime_segundos++;
 
     if (user_alarm_sobrando > 0) {
         user_alarm_sobrando--;
         if (user_alarm_sobrando == 0) {
-            printk(0, "%s", "\nalarm\n> ");
+            printk(0, "alarm\r\n"); 
         }
     }
-
-    next_tick += TIMER_FREQ; 
-    csr_write(CSR_STIMECMP, next_tick);
 }

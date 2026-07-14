@@ -33,7 +33,7 @@ void kmain()
 	timer_irq_enable();
 	info("enabling serial...\n");
 	serial_init();
-	// serial_irq_enable();
+	serial_irq_enable();
 
 	/* implement your shell here */
     hart_irq_enable();
@@ -45,13 +45,13 @@ void kmain()
         if (serial_read(&c, 1) > 0) {
             if (c == '\r' || c == '\n') {
                 line_buffer[pos] = '\0';
-                printk(0, "\n"); 
+                printk(0, "\r\n");
 
                 if (strncmp(line_buffer, "echo ", 5) == 0) {
-                    printk(0, "%s\n", line_buffer + 5);
+                    printk(0, "%s\r\n", line_buffer + 5);
                 } 
                 else if (strcmp(line_buffer, "uptime") == 0) {
-                    printk(0, "%ds\n", (int)uptime_segundos);
+                    printk(0, "%ds\r\n", (int)uptime_segundos);
                 } 
                 else if (strncmp(line_buffer, "alarm ", 6) == 0) {
                     u64 t = 0;
