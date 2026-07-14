@@ -3,6 +3,7 @@
 #include <arch/timer.h>
 #include <kernel/trap.h>
 #include <kernel/serial.h>
+#include <kernel/string.h>
 
 static char line_buffer[256];
 static int pos = 0;
@@ -10,6 +11,8 @@ static int pos = 0;
 extern int _hartid[];
 extern u64 uptime_segundos;
 extern u64 user_alarm_sobrando;
+
+extern void plic_init(void);
 void kmain()
 {
 	printk_set_level(LOG_DEBUG);
